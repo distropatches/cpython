@@ -53,6 +53,10 @@ byte-code cache files in the directory containing the source code.
    :func:`compile` function.  The default of ``-1`` selects the optimization
    level of the current interpreter.
 
+   If the SOURCE_DATE_EPOCH environment variable is set, the .py file mtime
+   and timestamp entry in .pyc file header, will be limited to this value.
+   See https://reproducible-builds.org/specs/source-date-epoch/ for more info.
+
    .. versionchanged:: 3.2
       Changed default value of *cfile* to be :PEP:`3147`-compliant.  Previous
       default was *file* + ``'c'`` (``'o'`` if optimization was enabled).

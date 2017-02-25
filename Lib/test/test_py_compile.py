@@ -98,6 +98,20 @@ class PyCompileTests(unittest.TestCase):
         self.assertFalse(os.path.exists(
             importlib.util.cache_from_source(bad_coding)))
 
+    def test_source_date_epoch(self):
+        testtime = 123456789
+        with support.EnvironmentVarGuard() as env:
+            env["SOURCE_DATE_EPOCH"] = str(testtime)
+            py_compile.compile(self.source_path, self.pyc_path)
+        self.assertTrue(os.path.exists(self.pyc_path))
+        self.assertFalse(os.path.exists(self.cache_path))
+        statinfo = os.stat(self.source_path)
+        self.assertEqual(statinfo.st_mtime, testtime)
+        with open(self.pyc_path, "rb") as f:
+            f.read(4) # skip the magic .pyc number
+            timebytes = f.read(4) # read timestamp from pyc header
+        self.assertEqual(testtime, int.from_bytes(timebytes, 'little'))
+
     @unittest.skipIf(sys.flags.optimize > 0, 'test does not work with -O')
     def test_double_dot_no_clobber(self):
         # http://bugs.python.org/issue22966
